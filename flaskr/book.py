@@ -7,12 +7,14 @@ from flask import Blueprint, request, jsonify
 from pydantic import BaseModel
 from flask_pydantic import validate
 from werkzeug.exceptions import BadRequest
+from typing import Optional
 
 bp = Blueprint('book', __name__)
 
+
+
 @bp.route('/books', methods=['GET'])
 def get_books():
-    """Retrieve all books in JSON format."""
     db = get_db()
     books = db.execute(
         'SELECT id, title, author, year, isbn FROM book'
@@ -23,7 +25,6 @@ def get_books():
 
 @bp.route('/books', methods=['POST'])
 def create_book():
-    """Create a new book entry."""
     try:
         data = request.get_json()
         title = data.get('title')
@@ -49,7 +50,6 @@ def create_book():
     
 @bp.route('/books/<int:id>', methods=['GET'])
 def get_book_by_id(id):
-    """Retrieve a single book by its ID in JSON format."""
     db = get_db()
     book = db.execute(
         'SELECT id, title, author, year, isbn FROM book WHERE id = ?',
@@ -64,7 +64,6 @@ def get_book_by_id(id):
     return jsonify(book_data)
 @bp.route('/books/<int:id>', methods=['PUT'])
 def update_book_by_id(id):
-    """Mettre à jour un livre par son ID."""
     try:
         data = request.get_json()
         title = data.get('title')

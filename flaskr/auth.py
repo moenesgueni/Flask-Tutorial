@@ -1,5 +1,6 @@
+from datetime import datetime, timedelta
 import functools
-
+import jwt
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
@@ -7,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp = Blueprint('auth', __name__)
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -60,6 +61,13 @@ def login():
             return redirect(url_for('index'))
 
         flash(error)
+
+
+        token = jwt.encode({
+            'user' : request.form['username'],
+            'expiration' : str(datetime.utcnow() + timedelta(seconds=120))
+        },
+        bp.config['SECRET_KEY'])
 
     return render_template('auth/login.html')
 
